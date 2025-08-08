@@ -1,0 +1,264 @@
+{% extends 'main.html' %}
+{% block content %}
+
+<!-- Included SheetJS from CDN to help parse Excel/CSV files -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+<div class="row" style="margin-bottom: 125px;">
+    <div class="col-md-2"></div>
+    <div class="col-md-8">
+        <center><h1>Kidney Disease Predictor</h1></center>
+        <div class="card card-body" style="border: 1px solid black;">
+            <form class="form-horizontal" action="{{ url_for('predictPage') }}" method="POST">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <input style="border: 1px solid black;" class="form-control" type="text" name="age" placeholder="age">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <input style="border: 1px solid black;" class="form-control" type="text" name="bp" placeholder="bp">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <input style="border: 1px solid black;" class="form-control" type="text" name="al" placeholder="al">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <input style="border: 1px solid black;" class="form-control" type="text" name="su" placeholder="su">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <input style="border: 1px solid black;" class="form-control" type="text" name="rbc" placeholder="rbc">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <input style="border: 1px solid black;" class="form-control" type="text" name="pc" placeholder="pc">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <input style="border: 1px solid black;" class="form-control" type="text" name="pcc" placeholder="pcc">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <input style="border: 1px solid black;" class="form-control" type="text" name="ba" placeholder="ba">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <input style="border: 1px solid black;" class="form-control" type="text" name="bgr" placeholder="bgr">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <input style="border: 1px solid black;" class="form-control" type="text" name="bu" placeholder="bu">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <input style="border: 1px solid black;" class="form-control" type="text" name="sc" placeholder="sc">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <input style="border: 1px solid black;" class="form-control" type="text" name="pot" placeholder="pot">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <input style="border: 1px solid black;" class="form-control" type="text" name="wc" placeholder="wc">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <input style="border: 1px solid black;" class="form-control" type="text" name="htn" placeholder="htn">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <input style="border: 1px solid black;" class="form-control" type="text" name="dm" placeholder="dm">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <input style="border: 1px solid black;" class="form-control" type="text" name="cad" placeholder="cad">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <input style="border: 1px solid black;" class="form-control" type="text" name="pe" placeholder="pe">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <input style="border: 1px solid black;" class="form-control" type="text" name="ane" placeholder="ane">
+                        </div>
+                    </div>
+                </div>
+                <input type="submit" class="btn btn-info btn-block" value="Predict">
+            </form>
+            <!-- Hidden file input for report upload -->
+            <input type="file" id="reportFile" accept=".csv, .xls, .xlsx" style="display: none;" />
+            <!-- Upload Report Button -->
+            <button type="button" id="uploadReportBtn" class="btn btn-secondary btn-block" style="margin-top: 10px;">
+                Upload Report
+            </button>
+        </div>
+    </div>
+    <div class="col-md-2"></div>
+</div>
+<br>
+<h1 style="text-align: center"> Sample-Inputs in the Data Set</h1>
+<br>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">age</th>
+      <th scope="col">bp</th>
+      <th scope="col">al</th>
+      <th scope="col">su</th>
+      <th scope="col">rbc</th>
+      <th scope="col">pc</th>
+      <th scope="col">pcc</th>
+      <th scope="col">ba</th>
+      <th scope="col">bgr</th>
+      <th scope="col">bu</th>
+      <th scope="col">sc</th>
+      <th scope="col">pot</th>
+      <th scope="col">wc</th>
+      <th scope="col">htn</th>
+      <th scope="col">dm</th>
+      <th scope="col">cad</th>
+      <th scope="col">pe</th>
+      <th scope="col">ane</th>
+      <th scope="col">Disease</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>24</td>
+      <td>100</td>
+      <td>2</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>136</td>
+      <td>60</td>
+      <td>1.9</td>
+      <td>3.7</td>
+      <td>9600</td>
+      <td>1</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>Present</td>
+    </tr>
+    <tr>
+      <td>68</td>
+      <td>80</td>
+      <td>3</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>157</td>
+      <td>162</td>
+      <td>9.6</td>
+      <td>4.9</td>
+      <td>11000</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>Present</td>
+    </tr>
+    <tr>
+      <td>51</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>121</td>
+      <td>27</td>
+      <td>0.8</td>
+      <td>3.7</td>
+      <td>8300</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>Healthy</td>
+    </tr>
+  </tbody>
+</table>
+
+<script>
+    // Trigger the hidden file input when the "Upload Report" button is clicked
+    document.getElementById("uploadReportBtn").addEventListener("click", function(){
+        document.getElementById("reportFile").click();
+    });
+
+    // Listen for changes on the file input element
+    document.getElementById("reportFile").addEventListener("change", function(e){
+        var file = e.target.files[0];
+        if (!file) return;
+        
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            var data = e.target.result;
+            // Parse the file as a binary string using SheetJS
+            var workbook = XLSX.read(data, {type: 'binary'});
+            // Get the first sheet
+            var firstSheetName = workbook.SheetNames[0];
+            var worksheet = workbook.Sheets[firstSheetName];
+            // Convert the sheet to a 2D array (each row is an array of cell values)
+            var jsonData = XLSX.utils.sheet_to_json(worksheet, {header: 1});
+            if(jsonData.length < 1) return;
+
+            // Assume the first row is a header; use the second row for data.
+            var dataRow = jsonData.length > 1 ? jsonData[1] : jsonData[0];
+            
+            // Map the expected form field names to the columns in the file.
+            // Expected order: age, bp, al, su, rbc, pc, pcc, ba, bgr, bu, sc, pot, wc, htn, dm, cad, pe, ane
+            var fields = ["age", "bp", "al", "su", "rbc", "pc", "pcc", "ba", "bgr", "bu", "sc", "pot", "wc", "htn", "dm", "cad", "pe", "ane"];
+            
+            // Fill in each input field with the corresponding value from the data row
+            fields.forEach(function(field, index) {
+                var input = document.querySelector('input[name="' + field + '"]');
+                if (input && dataRow[index] !== undefined) {
+                    input.value = dataRow[index];
+                }
+            });
+        };
+        reader.readAsBinaryString(file);
+    });
+</script>
+
+{% endblock %}
